@@ -1,0 +1,1 @@
+Currently on Stage 1. Allows artist search by name and display artist's top 10 tracks.
