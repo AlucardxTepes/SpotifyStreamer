@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_height="match_parent"
+              android:layout_width="match_parent"
+              android:orientation="vertical">
+
+
+    <EditText
+        android:id="@+id/search_editText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter artist name..."
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp"
+        android:singleLine="true"
+        android:imeOptions="actionSearch"/>
+
+    <fragment android:id="@+id/results_fragment"
+          android:name="com.nelsonpantaleon.musicstreamer.ResultsFragment"
+          tools:layout="@layout/fragment_results"
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"/>
+
+</LinearLayout>
