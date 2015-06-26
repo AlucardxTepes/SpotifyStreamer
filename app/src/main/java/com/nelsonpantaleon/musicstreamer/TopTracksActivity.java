@@ -6,7 +6,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +22,7 @@ public class TopTracksActivity extends ActionBarActivity {
     String mArtistID;
     ListView mListView;
     TrackAdapter mTrackAdapter;
+    TracksResults mTracksResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,24 @@ public class TopTracksActivity extends ActionBarActivity {
         if(savedInstanceState == null){
             // Get artist ID from previous activity
             mArtistID = getIntent().getStringExtra("ARTIST_ID");
-            Toast.makeText(getApplicationContext(), "Retrieved ID: " + mArtistID, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "Retrieved ID: " + mArtistID, Toast.LENGTH_SHORT).show();
+        }
+        if(savedInstanceState != null && !savedInstanceState.isEmpty()){
+            // receive saved bundle items
+            mTracksResults = savedInstanceState.getParcelable("TopTracksResults");
+
+            try {
+                // create local ArtistResults list and adapter
+                List<Track> tracksResultsList = mTracksResults.getTracksResultsList();
+                TrackAdapter refreshTrackAdapter = new TrackAdapter(getApplicationContext(),R.layout.list_item_results);
+                // add saved local items to adapter and set adapter to listview
+                refreshTrackAdapter.addAll(tracksResultsList);
+                mListView.setAdapter(refreshTrackAdapter);
+                // remove data to prevent crashes
+                savedInstanceState.remove("TopTracksResults");
+            } catch (NullPointerException e){
+                e.printStackTrace();
+            }
         }
 
         // init listview
@@ -62,12 +79,17 @@ public class TopTracksActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable("TopTracksResults", mTracksResults);
+        super.onSaveInstanceState(outState);
+    }
+
     private void searchTracks(){
         // get artist search results
         GetTopTracksTask getTopTracks = new GetTopTracksTask();
         getTopTracks.execute(mArtistID);
     }
-
 
 
 
@@ -80,21 +102,34 @@ public class TopTracksActivity extends ActionBarActivity {
 
         @Override
         protected Tracks doInBackground(String... params) {
-            // get top tracks using string argument
-            Map<String,Object> options = new HashMap<String,Object>();
-            options.put("country", "DO");
-            return spotify.getArtistTopTrack(params[0], options);
+            try {
+                // get top tracks using string argument
+                Map<String, Object> options = new HashMap<String, Object>();
+                options.put("country", "DO");
+                return spotify.getArtistTopTrack(params[0], options);
+            } catch (RuntimeException e){
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override
         protected void onPostExecute(Tracks topTracks) {
-            super.onPostExecute(topTracks);
+            try{
+                super.onPostExecute(topTracks);
 //            // obtain top tracks collection from artistID
-            List<Track> topTracksList = topTracks.tracks;
+                List<Track> topTracksList = topTracks.tracks;
 //            // init, fill up and set the adapter
-            mTrackAdapter = new TrackAdapter(getApplicationContext().getApplicationContext(),R.layout.list_item_top_tracks);
-            mTrackAdapter.addAll(topTracksList);
-            mListView.setAdapter(mTrackAdapter);
+                mTrackAdapter = new TrackAdapter(getApplicationContext().getApplicationContext(),R.layout.list_item_top_tracks);
+                mTrackAdapter.addAll(topTracksList);
+                mListView.setAdapter(mTrackAdapter);
+                // Save results to keep in 'savedinstancestate'
+                mTracksResults = new TracksResults();
+                mTracksResults.setTracksResultsList(topTracksList);
+            } catch (RuntimeException e){
+                e.printStackTrace();
+            }
+
         }
     }
 }
