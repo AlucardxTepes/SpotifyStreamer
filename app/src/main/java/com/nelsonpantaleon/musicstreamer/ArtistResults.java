@@ -2,10 +2,8 @@ package com.nelsonpantaleon.musicstreamer;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import kaaes.spotify.webapi.android.models.Artist;
 
 /**

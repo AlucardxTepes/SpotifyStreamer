@@ -88,11 +88,11 @@ public class ResultsFragment extends Fragment {
         // Prevent null pointer exception
         if(!MainActivity.mSearchEditText.getText().toString().equals("")) {
             // run search if theres internet connection
-            if (pingSpotify()) {
+            if (!pingSpotify()) {
                 // get artist search results
                 GetArtistTask getArtistTask = new GetArtistTask();
                 getArtistTask.execute(MainActivity.mSearchEditText.getText().toString());
-            }else{
+            }else{ // no internet access
                 Toast.makeText(getActivity().getApplicationContext(), "No internet access", Toast.LENGTH_SHORT).show();
             }
         }

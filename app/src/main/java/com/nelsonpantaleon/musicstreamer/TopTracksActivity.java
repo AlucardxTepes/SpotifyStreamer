@@ -32,16 +32,16 @@ public class TopTracksActivity extends ActionBarActivity {
         if(savedInstanceState == null){
             // Get artist ID from previous activity
             mArtistID = getIntent().getStringExtra("ARTIST_ID");
-//            Toast.makeText(getApplicationContext(), "Retrieved ID: " + mArtistID, Toast.LENGTH_SHORT).show();
         }
         if(savedInstanceState != null && !savedInstanceState.isEmpty()){
             // receive saved bundle items
             mTracksResults = savedInstanceState.getParcelable("TopTracksResults");
-
             try {
-                // create local ArtistResults list and adapter
+                // init listview
+                mListView = (ListView) findViewById(R.id.topTracks_listView);
+                // create local TracksResults list and adapter
                 List<Track> tracksResultsList = mTracksResults.getTracksResultsList();
-                TrackAdapter refreshTrackAdapter = new TrackAdapter(getApplicationContext(),R.layout.list_item_results);
+                TrackAdapter refreshTrackAdapter = new TrackAdapter(getApplicationContext(),R.layout.list_item_top_tracks);
                 // add saved local items to adapter and set adapter to listview
                 refreshTrackAdapter.addAll(tracksResultsList);
                 mListView.setAdapter(refreshTrackAdapter);
@@ -50,11 +50,11 @@ public class TopTracksActivity extends ActionBarActivity {
             } catch (NullPointerException e){
                 e.printStackTrace();
             }
+        }else {
+            // init listview
+            mListView = (ListView) findViewById(R.id.topTracks_listView);
+            searchTracks();
         }
-
-        // init listview
-        mListView = (ListView)findViewById(R.id.topTracks_listView);
-        searchTracks();
     }
 
     @Override
@@ -120,7 +120,7 @@ public class TopTracksActivity extends ActionBarActivity {
 //            // obtain top tracks collection from artistID
                 List<Track> topTracksList = topTracks.tracks;
 //            // init, fill up and set the adapter
-                mTrackAdapter = new TrackAdapter(getApplicationContext().getApplicationContext(),R.layout.list_item_top_tracks);
+                mTrackAdapter = new TrackAdapter(getApplicationContext(),R.layout.list_item_top_tracks);
                 mTrackAdapter.addAll(topTracksList);
                 mListView.setAdapter(mTrackAdapter);
                 // Save results to keep in 'savedinstancestate'
